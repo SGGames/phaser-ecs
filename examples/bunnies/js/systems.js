@@ -85,7 +85,7 @@ LifetimeSystem.prototype.process = function(entity, elapsed) {
 
     clock.t -= elapsed;
     if (clock.t < 0) {
-        entity.kill();
+        // entity.kill();
     }
 };
 
@@ -103,7 +103,8 @@ function RenderingSystem() {
 
     this.sprites = [];
 
-    this.spriteGroup = this.game.add.group();
+    var scene = Phaser.ECS.scene;
+    this.spriteGroup = scene.add.group();
 
 }
 
@@ -116,15 +117,16 @@ RenderingSystem.prototype.onAdded = function(entity) {
     var display = entity.get(this.getComponent(Display));
 
     var sprite = this.spriteGroup.getFirstDead();
+    var scene = Phaser.ECS.scene;
     if (!sprite) {
-      sprite = this.game.add.sprite(position.x, position.y, display.sprite);
+      sprite = scene.add.sprite(position.x, position.y, display.sprite);
       this.spriteGroup.add(sprite);
     }  else {
         sprite.revive();
     }
     sprite.x = position.x;
     sprite.y = position.y;
-    sprite.anchor.setTo(0.5, 0.5);
+    // sprite.anchor.setTo(0.5, 0.5);
     sprite.width = radius.r*2
     sprite.height = radius.r*2
     this.sprites[entity.id] = sprite;

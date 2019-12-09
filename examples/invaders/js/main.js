@@ -1,14 +1,28 @@
-var game = new Phaser.Game(800,600, Phaser.AUTO, '', { preload: preload, create: create });
+var game = new Phaser.Game({
+    width: 800,
+    height: 600,
+    type: Phaser.AUTO,
+    scene: {
+        preload: preload,
+        create: create
+    },
+    plugins: {
+        global: [
+            { key: 'ECSPlugin', plugin: Phaser.ECS.Plugin, start: true, mapping: 'ecs' }
+        ]
+    },
+});
 
 
 function preload() {
-    game.load.image('ship', 'assets/ship.png');
-    game.load.image('bullet', 'assets/bullet.png');
-    game.load.image('invader', 'assets/invader.png');
+    this.load.image('ship', 'assets/ship.png');
+    this.load.image('bullet', 'assets/bullet.png');
+    this.load.image('invader', 'assets/invader.png');
 }
 
 function create() {
-    game.add.plugin(Phaser.Plugin.ECS);
+    Phaser.ECS.game = game;
+    Phaser.ECS.scene = this;
 
     // setup our Components
     var shipController = new ShipController();
@@ -25,21 +39,43 @@ function create() {
     Phaser.ECS.registerSystem(new RenderingSystem());
 
 
-    game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR,Phaser.Keyboard.LEFT,Phaser.Keyboard.RIGHT]);
+    // this.input.keyboard.addCapture([
+    //     Phaser.Input.Keyboard.KeyCodes.SPACEBAR, 
+    //     Phaser.Input.Keyboard.KeyCodes.LEFT, 
+    //     Phaser.Input.Keyboard.KeyCodes.RIGHT
+    // ]);
+    this.input.keyboard.addCapture([
+        'SPACE', 
+        'LEFT', 
+        'RIGHT'
+    ]);
+    var spacebar = this.input.keyboard.addKey('SPACE');
+    spacebar.on('down', function () {
+        shipController.shoot = true
+    });
+    spacebar.on('up',function () {
+        shipController.shoot = false
+    });
 
-    var spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    spacebar.onDown.add(function() { shipController.shoot = true });
-    spacebar.onUp.add(function() { shipController.shoot = false });
+    var left = this.input.keyboard.addKey('LEFT');
+    left.on('down', function () {
+        // console.log('on LEFT down');
+        shipController.moveLeft = true
+    });
+    left.on('up',function () {
+        shipController.moveLeft = false
+    });
 
-    var left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-    left.onDown.add(function() { shipController.moveLeft = true });
-    left.onUp.add(function() { shipController.moveLeft = false });
+    var right = this.input.keyboard.addKey('RIGHT');
+    right.on('down', function () {
+        // console.log('on RIGHT down');
+        shipController.moveRight = true
+    });
+    right.on('up',function () {
+        shipController.moveRight = false
+    });
 
-    var right = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-    right.onDown.add(function() { shipController.moveRight = true });
-    right.onUp.add(function() { shipController.moveRight = false });
-
-    EntityCreator.createPlayer(400,500,shipController);
+    EntityCreator.createPlayer(400, 500, shipController);
 
     for (var y = 0; y < 4; y++) {
         for (var x = 0; x < 10; x++) {

@@ -1,42 +1,4 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var n;"undefined"!=typeof window?n=window:"undefined"!=typeof global?n=global:"undefined"!=typeof self&&(n=self);var f=n;f=f.Phaser||(f.Phaser={}),f=f.Plugin||(f.Plugin={}),f.ECS=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var World = require('./world');
-
-var ECSWorld = new World();
-Phaser.ECS = ECSWorld;
-
-/**
- * @class Phaser.Plugin.ECS
- * @classdesc Phaser - ECS Plugin based on makrjs by ooflorent
- *
- * @constructor
- * @extends Phaser.Plugin
- *
- * @param {Phaser.Game} game - A reference to the currently running game.
- * @param {Any} parent - The object that owns this plugin, usually Phaser.PluginManager.
- */
-function ECS(game, parent) {
-    Phaser.Plugin.call(this, game, parent);
-    ECSWorld.game = game;
-}
-
-//  Extends the Phaser.Plugin template, setting up values we need
-ECS.prototype = Object.create(Phaser.Plugin.prototype);
-ECS.prototype.constructor = ECS;
-
-module.exports = ECS;
-
-ECS.prototype.init = function () {};
-
-ECS.prototype.update = function() {
-    ECSWorld.update(this.game.time.physicsElapsed);
-};
-
-ECS.prototype.destroy = function () {
-    Phaser.Plugin.prototype.destroy.apply(this, arguments);
-    // Do destruction of our own here
-};
-
-},{"./world":12}],2:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g=(g.Phaser||(g.Phaser = {}));g=(g.Plugin||(g.Plugin = {}));g.ECS = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /**
  * @class BitSet
  * @constructor
@@ -125,7 +87,7 @@ BitSet.prototype.contains = function(other) {
 
 module.exports = BitSet;
 
-},{}],3:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 var makr = require('./global');
 var BitSet = require('./bit_set');
 var FastBitSet = require('./fast_bit_set');
@@ -251,7 +213,7 @@ Object.defineProperty(Entity.prototype, 'alive', {
 
 module.exports = Entity;
 
-},{"./bit_set":2,"./fast_bit_set":4,"./global":5}],4:[function(require,module,exports){
+},{"./bit_set":1,"./fast_bit_set":3,"./global":4}],3:[function(require,module,exports){
 /**
  * @class FastBitSet
  * @constructor
@@ -304,7 +266,7 @@ FastBitSet.prototype.contains = function(other) {
 
 module.exports = FastBitSet;
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
  * @module makr
  * @param {Object} config
@@ -321,7 +283,7 @@ function makr(config) {
 
 module.exports = makr;
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var makr = require('./global')
 
 // Install default config
@@ -338,7 +300,7 @@ makr.World = require('./world');
 
 module.exports = makr;
 
-},{"./bit_set":2,"./fast_bit_set":4,"./global":5,"./iterating_system":7,"./system":8,"./world":9}],7:[function(require,module,exports){
+},{"./bit_set":1,"./fast_bit_set":3,"./global":4,"./iterating_system":6,"./system":7,"./world":8}],6:[function(require,module,exports){
 var System = require('./system');
 
 /**
@@ -381,7 +343,7 @@ IteratingSystem.prototype.process = function(entity, elapsed) {};
 
 module.exports = IteratingSystem;
 
-},{"./system":8}],8:[function(require,module,exports){
+},{"./system":7}],7:[function(require,module,exports){
 var makr = require('./global');
 var BitSet = require('./bit_set');
 var FastBitSet = require('./fast_bit_set');
@@ -520,7 +482,7 @@ Object.defineProperty(System.prototype, 'world', {
 
 module.exports = System;
 
-},{"./bit_set":2,"./fast_bit_set":4,"./global":5}],9:[function(require,module,exports){
+},{"./bit_set":1,"./fast_bit_set":3,"./global":4}],8:[function(require,module,exports){
 var Entity = require('./entity');
 
 /**
@@ -882,7 +844,110 @@ World.prototype._removeComponents = function(entity) {
 
 module.exports = World;
 
-},{"./entity":3}],10:[function(require,module,exports){
+},{"./entity":2}],9:[function(require,module,exports){
+var World = require('./world');
+var System = require('./system');
+
+var currentECSWorld = new World();
+
+/**
+* @author       Richard Davey <rich@photonstorm.com>
+* @copyright    2018 Photon Storm Ltd.
+* @license      {@link https://github.com/photonstorm/phaser3-plugin-template/blob/master/LICENSE|MIT License}
+*/
+
+var ECSPlugin = function (pluginManager)
+{
+    this.pluginManager = pluginManager;
+    this.game = pluginManager.game;
+    currentECSWorld.game = this.game;
+};
+
+// //  Static function called by the PluginFile Loader.
+// ECSPlugin.register = function (PluginManager)
+// {
+//     //  Register this plugin with the PluginManager, so it can be added to Scenes.
+
+//     //  The first argument is the name this plugin will be known as in the PluginManager. It should not conflict with already registered plugins.
+//     //  The second argument is a reference to the plugin object, which will be instantiated by the PluginManager when the Scene boots.
+//     //  The third argument is the local mapping. This will make the plugin available under `this.sys.base` and also `this.base` from a Scene if
+//     //  it has an entry in the InjectionMap.
+//     PluginManager.register('ECS', ECSPlugin, 'ecs');
+// };
+
+ECSPlugin.prototype = {
+    init: function ()
+    {
+
+    },
+
+    //  Called when a Scene is started by the SceneManager. The Scene is now active, visible and running.
+    start: function ()
+    {        
+        var eventEmitter = this.game.events;;
+
+        //  Listening to the following events is entirely optional, although we would recommend cleanly shutting down and destroying at least.
+        //  If you don't need any of these events then remove the listeners and the relevant methods too.
+
+        // eventEmitter.on('start', this.start, this);
+        eventEmitter.once('destroy', this.gameDestroy, this);
+        eventEmitter.on('pause', this.gamePause, this);
+        eventEmitter.on('resume', this.gameResume, this);
+        eventEmitter.on('resize', this.gameResize, this);
+        eventEmitter.on('prestep', this.gamePreStep, this);
+        eventEmitter.on('step', this.gameStep, this);
+        eventEmitter.on('poststep', this.gamePostStep, this);
+        // eventEmitter.on('prerender', this.gamePreRender, this);
+        // eventEmitter.on('postrender', this.gamePostRender, this);
+    },
+    gamePreStep: function (time, delta)
+    {
+    },
+    gameStep: function (time, delta)
+    {
+        currentECSWorld.update(delta / 1000);
+    },
+    gamePostStep: function (time, delta)
+    {
+    },
+    gamePause: function ()
+    {
+    },
+    gameResume: function ()
+    {
+    },
+    gameResize: function ()
+    {
+    },
+    gameDestroy: function ()
+    {
+        // this.shutdown();
+        this.pluginManager = null;
+        this.game = null;
+        this.scene = null;
+        this.systems = null;
+    }
+
+};
+
+ECSPlugin.prototype.constructor = ECSPlugin;
+
+//  Make sure you export the plugin for webpack to expose
+
+Phaser.ECS = {
+    world: currentECSWorld,
+    World: World,
+    System: System,
+    Plugin: ECSPlugin,
+    registerComponent: function (aClass){ return this.world.registerComponent(aClass); },
+    registerSystem: function (aSystem){ return this.world.registerSystem(aSystem); },
+    getComponent: function (aComponent){ return this.world.getComponent(aComponent); },
+    create: function (params){ return this.world.create(params); },
+    getEntitiesByGroup: function (aGroup){ return this.world.getEntitiesByGroup(aGroup); },
+    addToGroup: function (aGameObject, aGroup){ return this.world.addToGroup(aGameObject, aGroup); }
+};
+module.exports = ECSPlugin;
+},{"./system":10,"./world":12}],10:[function(require,module,exports){
 'use strict';
 
 var makr = require('makr');
@@ -901,7 +966,7 @@ System.prototype.getComponent = function(component) {
 
 module.exports = System;
 
-},{"makr":6}],11:[function(require,module,exports){
+},{"makr":5}],11:[function(require,module,exports){
 var utils = module.exports = {};
 
 utils.ComponentRegister = (function() {
@@ -946,14 +1011,12 @@ utils.inherits = function(ctor, superCtor, methods) {
 
 },{}],12:[function(require,module,exports){
 var makr = require('makr'),
-    System = require('./system'),
     utils = require('./utils');
 
 function World() {
     makr.World.call(this);
     this.game = false;
     this.componentRegister = utils.ComponentRegister;
-    this.System = System;
 }
 
 //  Extends the Phaser.Plugin template, setting up values we need
@@ -970,5 +1033,5 @@ World.prototype.registerComponent = function(component) {
 
 module.exports = World;
 
-},{"./system":10,"./utils":11,"makr":6}]},{},[1])(1)
+},{"./utils":11,"makr":5}]},{},[9])(9)
 });

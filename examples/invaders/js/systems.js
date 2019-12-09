@@ -52,8 +52,11 @@ MovementSystem.prototype.process = function(entity, elapsed) {
     var position = entity.get(this.getComponent(Position));
     var velocity = entity.get(this.getComponent(Velocity));
 
-    position.x += velocity.dx * elapsed;
-    position.y += velocity.dy * elapsed;
+    console.log(position, velocity, elapsed);
+    if (position && velocity) {
+        position.x += velocity.dx * elapsed;
+        position.y += velocity.dy * elapsed;
+    }
 }
 
 // Bullets
@@ -111,9 +114,9 @@ function RenderingSystem() {
     this.registerComponent(this.getComponent(Display));
 
     this.sprites = [];
-
-    this.bulletGroup = this.game.add.group();
-    this.invaderGroup = this.game.add.group();
+    var scene = Phaser.ECS.scene;
+    this.bulletGroup = scene.add.group();
+    this.invaderGroup = scene.add.group();
 
 }
 
@@ -132,24 +135,28 @@ RenderingSystem.prototype.onAdded = function(entity) {
     }
 
     if (!sprite) {
-        sprite = this.game.add.sprite(position.x, position.y, display.sprite);
+        var scene = Phaser.ECS.scene;
+        sprite = scene.add.sprite(position.x, position.y, display.sprite);
         if (display.sprite == 'bullet') {
             this.bulletGroup.add(sprite);
         } else if (display.sprite == 'invader') {
             this.invaderGroup.add(sprite);
         }
     } else {
-        sprite.revive();
+        // sprite.revive();
     }
     sprite.x = position.x;
     sprite.y = position.y;
-    sprite.anchor.setTo(0.5, 0.5);
+    // sprite.setOrigin(0.5, 0.5);
+    // console.log(sprite.x, sprite.y);
     this.sprites[entity.id] = sprite;
 };
 
 RenderingSystem.prototype.onRemoved = function(entity) {
-    this.sprites[entity.id].kill();
-    this.sprites[entity.id] = undefined;
+    if (this.sprites[entity.id]) {
+        this.sprites[entity.id].destroy();
+        this.sprites[entity.id] = undefined;
+    }
 }
 
 RenderingSystem.prototype.process = function(entity, elapsed) {
@@ -158,4 +165,7 @@ RenderingSystem.prototype.process = function(entity, elapsed) {
     var sprite = this.sprites[entity.id];
     sprite.x = position.x | 0;
     sprite.y = position.y | 0;
+    
+    // console.log(entity.id);
+    // console.log(sprite.x, sprite.y);
 };

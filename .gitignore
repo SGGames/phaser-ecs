@@ -20,3 +20,4 @@ npm-debug.log
 *__temp
 node_modules
 build
+shrinkwrap.yaml
